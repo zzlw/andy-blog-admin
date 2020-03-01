@@ -1,7 +1,7 @@
-import Vue from 'vue'
 import Router from 'vue-router'
-import routes from './routes'
+import Vue from 'vue'
 import appConfig from '@/config/index'
+import routes from './routes'
 import store from '../store'
 
 Vue.use(Router)
@@ -35,7 +35,6 @@ let isLoginRequired = (routeName) => {
 
 const router = new Router({
   mode: 'history',
-  base: process.env.BASE_URL,
   routes,
   scrollBehavior: () => ({
     y: 0

@@ -2,13 +2,12 @@
  * https://github.com/TaleLin/lin-cms-vue/blob/master/src/lin/plugins/axios.js
  */
 
-import Vue from 'vue'
-import axios from 'axios'
 import Config from '@/config/index'
+import Vue from 'vue'
+import author from '@/services/models/author'
+import axios from 'axios'
 import { getToken } from '@/services/utils/cookie'
 import store from '@/store'
-import author from '@/services/models/author'
-
 
 const config = {
   baseURL: Config.baseUrl,

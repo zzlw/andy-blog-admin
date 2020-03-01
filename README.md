@@ -1,6 +1,10 @@
-## smile-blog-admin
+## andy-blog-admin
 
-[![Build Status](https://www.travis-ci.org/smileShirmy/smile-blog-admin.svg?branch=master)](https://www.travis-ci.org/smileShirmy/smile-blog-admin)
+![GitHub action](https://github.com/zzlw/andy-blog-admin/workflows/docker%20image%20build%20and%20push/badge.svg)
+[![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/issues)
+[![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/network)
+[![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/stargazers)
+[![GitHub license](https://img.shields.io/github/license/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/blob/master/LICENSE)
 
 - 文章、分类、标签、评论、留言、用户等增删改查
 - 支持用户无感知token刷新
@@ -13,27 +17,24 @@
 
 该项目为后台管理部分，其它部分可点击下面的链接
 
-- 展示前端 [smile-blog-nuxt](https://github.com/smileShirmy/smile-blog-nuxt)
-- 管理后台 [smile-blog-admin](https://github.com/smileShirmy/smile-blog-admin)
-- 服务端 [smile-blog-koa](https://github.com/smileShirmy/smile-blog-koa)
-
-## screenshot
-
-![文章筛选](https://resource.shirmy.me/blog/screenshot/2019-07-20/smile-blog-admin-01.png)
-
-![新增作者](https://resource.shirmy.me/blog/screenshot/2019-07-20/smile-blog-admin-02.png)
+- 展示前端 [andy-blog-nuxt](https://github.com/zzlw/andy-blog-nuxt)
+- 管理后台 [andy-blog-admin](https://github.com/zzlw/andy-blog-admin)
+- 服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
 
 ## Setup
 
-该项目使用 RESTful API，要启动该项目要先启动服务端 [smile-blog-koa](https://github.com/smileShirmy/smile-blog-koa)
+该项目使用 RESTful API，要启动该项目要先启动服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
 
-```bash
+```shell
 # install
 npm install
 
 # development
 npm run dev
 
-# production 
+# production
 npm run build
+
+# docker
+docker container run -d --name andy-blog-admin -p 80:5000 zzlwte/andy-blog-admin
 ```
