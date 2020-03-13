@@ -19,9 +19,9 @@
 
 ## screenshot
 
-![文章筛选](https://resource.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-01.png)
+![文章筛选](https://cdn.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-01.png)
 
-![新增作者](https://resource.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-02.png)
+![新增作者](https://cdn.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-02.png)
 
 ## Setup
 
