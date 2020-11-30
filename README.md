@@ -1,6 +1,5 @@
 ## andy-blog-admin
-
-[![Build Status](https://www.travis-ci.org/smileAndy/andy-blog-admin.svg?branch=master)](https://www.travis-ci.org/smileAndy/andy-blog-admin)
+本项目采用 Jenkins 自动化部署
 
 - 文章、分类、标签、评论、留言、用户等增删改查
 - 支持用户无感知token刷新
