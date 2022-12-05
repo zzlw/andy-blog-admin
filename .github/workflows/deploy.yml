@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd /data/docker
-            docker-compose stop blog_web
+            docker-compose stop blog_console
             docker rm -f $(docker ps -a --filter ancestor=${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
             docker rmi -f $(docker images ${{ secrets.DOCKERHUB_REPOSITORY }}:latest -q)
             docker login --username=${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
