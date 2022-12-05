@@ -5,7 +5,8 @@ WORKDIR /app
 
 COPY . /app
 
-RUN npm i --registry=https://registry.npm.taobao.org
+# RUN npm i --registry=https://registry.npm.taobao.org
+RUN npm i
 
 RUN npm run build
 
