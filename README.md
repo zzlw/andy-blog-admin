@@ -16,12 +16,6 @@
 - 管理后台 [andy-blog-admin](https://github.com/zzlw/andy-blog-admin)
 - 服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
 
-## screenshot
-
-![文章筛选](https://cdn.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-01.png)
-
-![新增作者](https://cdn.fxq.design/blog/screenshot/2019-07-20/andy-blog-admin-02.png)
-
 ## Setup
 
 该项目使用 RESTful API，要启动该项目要先启动服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
@@ -35,4 +29,7 @@ npm run dev
 
 # production 
 npm run build
+
+# docker
+docker container run -d --name andy-blog-admin -p 80:5000 zzlwte/andy-blog-admin
 ```
