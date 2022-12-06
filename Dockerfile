@@ -15,3 +15,4 @@ FROM nginx:alpine as server
 COPY --from=builder /app/dist/ /var/www/html/
 COPY ./nginx.conf /etc/nginx/nginx.conf
 EXPOSE 5000
+# CMD ["nginx"]
