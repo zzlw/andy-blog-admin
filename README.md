@@ -4,7 +4,7 @@
 [![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/issues)
 [![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/network)
 [![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/stargazers)
-[![GitHub license](http://img.shields.io/github/license/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/blob/master/LICENSE)
 
 - 文章、分类、标签、评论、留言、用户等增删改查
 - 支持用户无感知token刷新
