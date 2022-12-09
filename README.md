@@ -1,5 +1,10 @@
 ## andy-blog-admin
-本项目采用 Jenkins 自动化部署
+
+![GitHub action](https://github.com/zzlw/andy-blog-admin/workflows/docker%20image%20build%20and%20push/badge.svg)
+[![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/issues)
+[![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/network)
+[![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/stargazers)
+[![GitHub license](http://img.shields.io/github/license/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/blob/master/LICENSE)
 
 - 文章、分类、标签、评论、留言、用户等增删改查
 - 支持用户无感知token刷新
