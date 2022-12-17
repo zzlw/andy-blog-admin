@@ -1,25 +1,25 @@
 <template>
   <div class="container">
-    <div class="view-title">标签管理</div>
+    <div class="view-title">音乐管理</div>
     <el-card class="wrapper">
       <el-tabs v-model="activeTab" @tab-click="handleClick">
-        <el-tab-pane label="标签列表" name="tagList">
+        <el-tab-pane label="音乐列表" name="tagList">
           <el-table :data="tags" width="100%" v-loading="loading">
             <el-table-column prop="name" label="名称"></el-table-column>
             <el-table-column label="操作" fixed="right" width="175">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="editTag(scope.row)"
+              <el-button type="primary" size="mini" @click="editMusic(scope.row)"
                 >编辑</el-button
               >
-              <el-button type="danger" size="mini" @click="deleteTag(scope.row)"
+              <el-button type="danger" size="mini" @click="deleteMusic(scope.row)"
                 >删除</el-button
               >
             </template>
           </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="新增标签" name="tagAdd">
-          <tag-info @createTag="onCreateTag"></tag-info>
+        <el-tab-pane label="新增音乐" name="tagAdd">
+          <tag-info @createMusic="onCreateMusic"></tag-info>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -64,7 +64,7 @@ export default {
     },
 
     // 监听添加标签是否成功
-    onCreateTag(flag) {
+    onCreateMusic(flag) {
       if (flag === true) {
         this.getTags()
       }
@@ -77,21 +77,21 @@ export default {
       }
     },
 
-    editTag(val) {
+    editMusic(val) {
       this.id = val.id
       this.form.name = val.name
       this.dialogVisible = true
     },
     
-    deleteTag(val) {
-      this.$confirm('此操作将永久删除标签, 是否继续?', '提示', {
+    deleteMusic(val) {
+      this.$confirm('此操作将永久删除音乐, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
         try {
           this.loading = true
-          const res = await tag.deleteTag(val.id)
+          const res = await tag.deleteMusic(val.id)
           if (res.errorCode === 0) {
             this.loading = false
             await this.getTags()
