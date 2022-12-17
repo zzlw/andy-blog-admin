@@ -2,6 +2,7 @@ import Utils from "@/services/utils/util";
 import article from './article'
 import category from './category'
 import author from './author'
+import media from './media'
 
 /**
  * @param {String} type       类型 folder： 有子路由 / tab 在右侧以 tab： 形式展示 / view： 直接展示页面
