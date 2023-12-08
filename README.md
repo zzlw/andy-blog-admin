@@ -25,14 +25,14 @@
 
 该项目使用 RESTful API，要启动该项目要先启动服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
 
-```bash
+```shell
 # install
 npm install
 
 # development
 npm run dev
 
-# production 
+# production
 npm run build
 
 # docker
