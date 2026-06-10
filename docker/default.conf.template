@@ -23,7 +23,7 @@ server {
         add_header Cache-Control "public, immutable";
     }
 
-    # vue-router history 模式回退
+    # SPA history 路由回退
     location / {
         try_files $uri $uri/ /index.html;
     }

@@ -1,0 +1,10 @@
+packages:
+  - '.'
+
+# pnpm >= 11
+allowBuilds:
+  esbuild: true
+
+# pnpm 10.x 兼容
+onlyBuiltDependencies:
+  - esbuild

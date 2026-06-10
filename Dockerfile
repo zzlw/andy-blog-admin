@@ -1,27 +1,30 @@
 # syntax=docker/dockerfile:1
 
 # ---------- 基础层 ----------
-FROM node:14-slim AS base
+FROM node:22-slim AS base
+ENV PNPM_HOME=/pnpm
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app
-COPY package.json package-lock.json* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# ---------- 开发层：热重载（docker-compose dev 使用 target: dev） ----------
+# ---------- 开发层：Vite Dev Server 热重载（compose dev 使用 target: dev） ----------
 FROM base AS dev
 ENV NODE_ENV=development
-RUN npm install
+RUN pnpm install
 COPY . .
 EXPOSE 8080
-CMD ["npm", "run", "serve", "--", "--host", "0.0.0.0"]
+CMD ["pnpm", "dev"]
 
 # ---------- 构建层 ----------
 FROM base AS builder
-RUN npm install
+RUN pnpm install --frozen-lockfile
 COPY . .
 # 注意：构建期不注入任何 API 地址，API 地址由运行时 app-config.js 提供
-RUN npm run build
+RUN pnpm build
 
 # ---------- 运行层：nginx 托管静态资源 ----------
-FROM nginx:1.25-alpine AS runner
+FROM nginx:1.27-alpine AS runner
 
 COPY --from=builder /app/dist/ /usr/share/nginx/html/
 

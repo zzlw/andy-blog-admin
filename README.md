@@ -1,40 +1,56 @@
-## andy-blog-admin
+# andy-blog-admin
 
-![GitHub action](https://github.com/zzlw/andy-blog-admin/workflows/docker%20image%20build%20and%20push/badge.svg)
-[![GitHub issues](http://img.shields.io/github/issues/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/issues)
-[![GitHub forks](http://img.shields.io/github/forks/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/network)
-[![GitHub stars](http://img.shields.io/github/stars/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/stargazers)
-[![GitHub license](https://img.shields.io/github/license/zzlw/andy-blog-admin.svg)](http://github.com/zzlw/andy-blog-admin/blob/master/LICENSE)
+博客管理后台（React 重写版），参考 [surmon.me.admin](https://github.com/surmon-china/surmon.me.admin) 架构设计，对接 [andy-blog-koa](../andy-blog-koa)（NestJS）后端。
 
-- 文章、分类、标签、评论、留言、用户等增删改查
-- 支持用户无感知token刷新
-- 登录校验
-- 用户权限控制
-- 支持文章和作者多对多关系
-- 支持用户头像剪裁上传
-- 通过配置文件的方式配置菜单及路由
-- UI框架 [ElementUI](https://element.eleme.io)
+## 技术栈
 
-该项目为后台管理部分，其它部分可点击下面的链接
+- **框架**: React 19 + TypeScript
+- **构建**: Vite（dev server 热更新 / 多阶段 Docker 构建）
+- **UI**: Ant Design 5
+- **路由**: React Router 7（`createBrowserRouter`）
+- **请求**: Axios 服务层 —— 统一响应解包、access token 过期静默刷新并重放请求
+- **编辑器**: CodeMirror 6（Markdown）+ marked 预览
+- **包管理**: pnpm
 
-- 展示前端 [andy-blog-nuxt](https://github.com/zzlw/andy-blog-nuxt)
-- 管理后台 [andy-blog-admin](https://github.com/zzlw/andy-blog-admin)
-- 服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
+## 目录结构
 
-## Setup
+```
+src/
+├── apis/          # 按资源划分的 API 模块（auth/article/category/...）
+├── components/    # 公共组件（布局、鉴权守卫、图片上传）
+├── contexts/      # 全局上下文（当前登录作者）
+├── pages/         # 路由页面
+├── services/      # http（axios 实例 + 拦截器）、token 存储
+├── config.ts      # 运行时配置读取（window.__APP_CONFIG__）
+└── types.ts       # 与后端约定的数据模型
+```
 
-该项目使用 RESTful API，要启动该项目要先启动服务端 [andy-blog-koa](https://github.com/zzlw/andy-blog-koa)
+## 本地开发
 
-```shell
-# install
-npm install
+```bash
+pnpm install
+pnpm dev        # http://localhost:8080
+```
 
-# development
-npm run dev
+API 地址默认 `http://localhost:3000`，可修改 `public/app-config.js`。
 
-# production
-npm run build
+推荐使用 [andy-blog-deploy](../andy-blog-deploy) 一键启动全部服务：
 
-# docker
-docker container run -d --name andy-blog-admin -p 80:5000 zzlwte/andy-blog-admin
+```bash
+cd ../andy-blog-deploy && make up   # admin 映射到 http://localhost:3002
+```
+
+## 构建与部署
+
+```bash
+pnpm build      # 产物输出 dist/
+```
+
+生产镜像为多阶段构建（builder → nginx），**构建产物不包含任何环境信息**：
+容器启动时 entrypoint 脚本根据 `API_BASE_URL` 环境变量渲染 `app-config.js`，
+实现「一份构建包部署多环境」。
+
+```bash
+docker build -t andy-blog-admin .
+docker run -p 8080:80 -e API_BASE_URL=https://api.example.com andy-blog-admin
 ```

@@ -1,10 +1,6 @@
 node_modules
 dist
-npm-debug.log
 .git
-.gitignore
-.env*
-Dockerfile
-.dockerignore
-*.md
+.github
+*.log
 .DS_Store
