@@ -4,66 +4,87 @@ import {
   put,
   _delete
 } from '@/services/plugins/axios'
-import { saveTokens, saveAccessToken } from '../utils/cookie'
+import { saveTokens } from '../utils/cookie'
+import { toCompat } from '@/services/utils/compat'
+
+// 角色字段兼容：旧视图使用 auth（8/16/32），新 API 字段名为 role（数值不变）
+const withAuthAlias = author => ({ ...author, auth: author.role })
+
+const SUPER_ADMIN_ROLE = 32
 
 export default class Author {
   static async getToken(name, password) {
-    const tokens = await post('v1/author/login', {
+    const res = await post('api/auth/login', {
       name,
       password
     })
-    saveTokens(tokens.accessToken, tokens.refreshToken)
+    const tokens = res.result
+    saveTokens(tokens.access_token, tokens.refresh_token)
     return tokens
   }
 
-  // 刷新令牌
+  // 刷新令牌（轮换双令牌）
   static async getRefreshToken() {
-    const res = await get('v1/author/refresh')
-    saveAccessToken(res.accessToken)
+    const res = await post('api/auth/refresh')
+    saveTokens(res.result.access_token, res.result.refresh_token)
   }
 
-  // 获取某个作者的信息
+  // 获取当前登录作者的信息
   static async getAuthorInfo() {
-    return await get('v1/author/info')
+    const res = await get('api/auth/profile')
+    return withAuthAlias(res.result)
   }
 
   // 获取所有作者
   static async getAuthors() {
-    return await get('v1/author/authors')
+    const res = await get('api/authors')
+    return res.result.map(withAuthAlias)
   }
 
-  // 获取除了管理员之外的所有作者
+  // 获取除了超级管理员之外的所有作者
   static async getAdminAuthors() {
-    return await get('v1/author/authors/admin')
+    const res = await get('api/authors')
+    return res.result
+      .filter(author => author.role !== SUPER_ADMIN_ROLE)
+      .map(withAuthAlias)
   }
 
   // 创建作者
-  static async createAuthor(author) {
-    let res = await post('v1/author', author)
-    return res
+  static createAuthor(author) {
+    return toCompat(post('api/authors', {
+      name: author.name,
+      password: author.password,
+      email: author.email,
+      description: author.description,
+      role: author.auth
+    }))
   }
 
   // 更新作者信息
-  static async updateAuthor(author, id) {
-    let res = await put(`v1/author/info?id=${id}`, author)
-    return res
+  static updateAuthor(author, id) {
+    return toCompat(put(`api/authors/${id}`, {
+      avatar: author.avatar,
+      email: author.email,
+      description: author.description,
+      role: author.auth
+    }))
   }
 
-  // 更换作者密码
-  static async changePassword(password, id) {
-    let res = await put(`v1/author/password?id=${id}`, password)
-    return res
+  // 重置作者密码（超管）
+  static changePassword(data, id) {
+    return toCompat(put(`api/authors/${id}/password`, { password: data.password }))
   }
 
   // 更换自己的密码
-  static async changeSelfPassword(data) {
-    let res = await put('v1/author/password/self', data)
-    return res
+  static changeSelfPassword(data) {
+    return toCompat(put('api/auth/password', {
+      old_password: data.oldPassword,
+      new_password: data.password
+    }))
   }
 
   // 删除作者
-  static async deleteAuthor(id) {
-    let res = await _delete(`v1/author?id=${id}`)
-    return res
+  static deleteAuthor(id) {
+    return toCompat(_delete(`api/authors/${id}`))
   }
 }

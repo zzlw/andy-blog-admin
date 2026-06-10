@@ -1,9 +1,10 @@
-.git*
-build/
-target/
-node_modules/
-.bundler/
-etc
-.vscode
+node_modules
 dist
+npm-debug.log
+.git
+.gitignore
+.env*
 Dockerfile
+.dockerignore
+*.md
+.DS_Store

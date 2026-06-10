@@ -4,30 +4,28 @@ import {
   put,
   _delete
 } from '@/services/plugins/axios'
+import { toCompat } from '@/services/utils/compat'
 
 class Category {
   // 新增分类
-  async createCategory(category) {
-    const res = await post('v1/category', category)
-    return res
+  createCategory(category) {
+    return toCompat(post('api/categories', category))
   }
 
   // 编辑分类
-  async updateCategory(id, category) {
-    const res = await put(`v1/category?id=${id}`, category)
-    return res
+  updateCategory(id, category) {
+    return toCompat(put(`api/categories/${id}`, category))
   }
 
   // 获取所有分类
   async getCategories() {
-    const res = await get('v1/category/categories')
-    return res
+    const res = await get('api/categories')
+    return res.result
   }
 
   // 删除某个分类
-  async deleteCategory(id) {
-    const res = await _delete(`v1/category?id=${id}`)
-    return res
+  deleteCategory(id) {
+    return toCompat(_delete(`api/categories/${id}`))
   }
 }
 

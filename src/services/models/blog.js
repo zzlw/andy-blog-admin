@@ -4,30 +4,28 @@ import {
   put,
   _delete
 } from '@/services/plugins/axios'
+import { toCompat } from '@/services/utils/compat'
 
 class Blog {
   // 创建友链
-  async createFriend(friend) {
-    const res = await post('v1/blog/friend', friend)
-    return res
+  createFriend(friend) {
+    return toCompat(post('api/friends', friend))
   }
 
   // 获取所有友链
   async getFriends() {
-    const res = await get('v1/blog/friend/friends')
-    return res
+    const res = await get('api/friends')
+    return res.result
   }
 
   // 更新友链
-  async updateFriend(id, friend) {
-    const res = await put(`v1/blog/friend?id=${id}`, friend)
-    return res
+  updateFriend(id, friend) {
+    return toCompat(put(`api/friends/${id}`, friend))
   }
 
   // 删除友链
-  async deleteFriend(id) {
-    const res = _delete(`v1/blog/friend?id=${id}`)
-    return res
+  deleteFriend(id) {
+    return toCompat(_delete(`api/friends/${id}`))
   }
 }
 

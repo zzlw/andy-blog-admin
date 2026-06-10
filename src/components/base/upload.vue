@@ -151,17 +151,18 @@ export default {
       try {
         const res = await this.$axios({
           method: 'post',
-          url: '/v1/file',
+          url: 'api/files',
           data: {
             file
           }
         })
         this.clearFileInput(this.$refs.fileInput)
-        if (!Array.isArray(res) || res.length !== 1) {
+        const urls = res && res.result && res.result.urls
+        if (!Array.isArray(urls) || urls.length !== 1) {
           this.$message.error('头像上传失败, 请重试')
           return ''
         }
-        return res[0]
+        return urls[0]
       } catch (error) {
         this.$message.error('头像上传失败, 请重试')
         return ''

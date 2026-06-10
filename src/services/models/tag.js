@@ -4,29 +4,27 @@ import {
   put,
   _delete
 } from '@/services/plugins/axios'
+import { toCompat } from '@/services/utils/compat'
 
 class Tag {
-  async createTag(tag) {
-    const res = await post('v1/tag', tag)
-    return res
+  createTag(tag) {
+    return toCompat(post('api/tags', tag))
   }
 
   // 获取所有标签
   async getTags() {
-    const res = await get('v1/tag/tags')
-    return res
+    const res = await get('api/tags')
+    return res.result
   }
 
   // 更新标签
-  async updateTag(id, tag) {
-    const res = await put(`v1/tag?id=${id}`, tag)
-    return res
+  updateTag(id, tag) {
+    return toCompat(put(`api/tags/${id}`, tag))
   }
 
   // 删除标签
-  async deleteTag(id) {
-    const res = _delete(`v1/tag?id=${id}`)
-    return res
+  deleteTag(id) {
+    return toCompat(_delete(`api/tags/${id}`))
   }
 }
 

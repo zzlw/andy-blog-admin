@@ -1,5 +1,8 @@
 /**
- * https://github.com/TaleLin/lin-cms-vue/blob/master/src/lin/plugins/axios.js
+ * 适配新版 NestJS 后端：
+ * - 统一响应 { status: 'success' | 'error', message, result }
+ * - 错误语义：HTTP 401 + error === 'TOKEN_EXPIRED' 触发静默刷新重放
+ * - 刷新失败（REFRESH_FAILED / TOKEN_INVALID）强制重新登录
  */
 
 import Config from '@/config/index'
@@ -8,6 +11,8 @@ import author from '@/services/models/author'
 import axios from 'axios'
 import { getToken } from '@/services/utils/cookie'
 import store from '@/store'
+
+const REFRESH_URL = 'api/auth/refresh'
 
 const config = {
   baseURL: Config.baseUrl,
@@ -42,7 +47,7 @@ _axios.interceptors.request.use(originConfig => {
   if (reqConfig.method === 'get') {
     if (!reqConfig.params) {  // 防止字段用错
       reqConfig.params = reqConfig.data || {}
-    } 
+    }
   } else if (reqConfig.method === 'post') {
     if (!reqConfig.data) {
       reqConfig.data = reqConfig.params || {}
@@ -69,8 +74,8 @@ _axios.interceptors.request.use(originConfig => {
     }
   }
 
-  // step2: auth 处理
-  if (reqConfig.url === 'v1/author/refresh') {
+  // step2: auth 处理（cookie 中已带 Bearer 前缀）
+  if (reqConfig.url.replace(/^\//, '') === REFRESH_URL) {
     const refreshToken = getToken('refresh_token')
     if (refreshToken) {
       reqConfig.headers.Authorization = refreshToken
@@ -86,64 +91,59 @@ _axios.interceptors.request.use(originConfig => {
   Promise.reject(error)
 })
 
+function forceLogin() {
+  setTimeout(() => {
+    store.dispatch('loginOut')
+    const { origin } = window.location
+    window.location.href = origin
+  }, 1500)
+}
+
 _axios.interceptors.response.use(async (res) => {
-  if (res.status.toString().charAt(0) === '2') {
-    return res.data
+  const body = res.data
+
+  // 成功：返回完整响应体 { status, message, result }，由 service 层解包
+  if (res.status.toString().charAt(0) === '2' && body && body.status === 'success') {
+    return body
   }
 
-  return new Promise(async (resolve, reject) => {
-    // 将本次失败请求保存
-    const { params, url, method } = res.config
-    store.commit('SET_REFRESH_OPTION', {
-      params,
-      url,
-      method
-    })
+  // 失败：body 为 { status: 'error', message, error }
+  const { url, method, params, data } = res.config
+  const message = (body && body.message) || '未知错误'
+  const errorCode = body && body.error
 
-    // 处理 API 异常
-    let { errorCode, msg } = res.data
-    if (msg instanceof Object) {
-      let showMsg = ''
-      Object.getOwnPropertyNames(msg).forEach((key, index) => {
-        if (index === 0) {
-          showMsg = msg[key]  // 如果是数组，展示第一条
-        }
-      })
-      msg = showMsg
+  // access token 过期：静默刷新后重放原请求（仅重试一次）
+  if (res.status === 401 && errorCode === 'TOKEN_EXPIRED' && !res.config.__isRetry) {
+    store.commit('SET_REFRESH_OPTION', { url, method, params, data })
+    try {
+      await author.getRefreshToken()
+      return await _axios({ ...store.state.refreshOptions, __isRetry: true })
+    } catch (e) {
+      forceLogin()
+      return Promise.reject(body)
     }
+  }
 
-    // 如果是令牌无效或者是 refreshToken 相关异常
-    if (errorCode === 10010 || errorCode === 10100) {
-      setTimeout(() => {
-        store.dispatch('loginOut')
-        const { origin } = window.location
-        window.location.href = origin
-      }, 1500)
-    }
+  // 刷新令牌失效 / 令牌非法：强制重新登录
+  if (res.status === 401 && (errorCode === 'REFRESH_FAILED' || errorCode === 'TOKEN_INVALID')) {
+    Vue.prototype.$message({ message: '登录已失效，请重新登录', type: 'error' })
+    forceLogin()
+    return Promise.reject(body)
+  }
 
-    // 令牌失效 或 令牌过期 需要重新刷新令牌
-    if (errorCode === 10020 || errorCode === 10030) {
-      const cache = {}
-      if (cache.url !== url) {
-        cache.url = url
-        await author.getRefreshToken()
-        const result = await _axios(store.state.refreshOptions)
-        resolve(result)
-        return
-      }
-    }
-    
-    Vue.prototype.$message({
-      message: msg || '未知的errorCode',
-      type: 'error',
-    })
-
-    reject(res.data)
+  Vue.prototype.$message({
+    message,
+    type: 'error',
   })
+
+  return Promise.reject(body)
 }, error => {
   // eslint-disable-next-line no-console
   console.log(error)
+  return Promise.reject(error)
 })
+
+const Plugin = {}
 
 Plugin.install = function (Vue) {
   Vue.axios = _axios

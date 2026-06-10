@@ -262,28 +262,26 @@ export default {
 
       return this.$axios({
         method: 'post',
-        url: '/v1/file',
+        url: 'api/files',
         data: {
           file,
         },
       }).then((res) => {
         // 清空输入框
         this.clearFileInput(this.$refs.avatarInput)
-        if (!Array.isArray(res) || res.length !== 1) {
+        const urls = res && res.result && res.result.urls
+        if (!Array.isArray(urls) || urls.length !== 1) {
           this.$message.error('头像上传失败, 请重试')
           return false
         }
-        // if (res.errorCode === ) {
-        //   throw new Error('文件体积过大')
-        // }
         return this.$axios({
           method: 'put',
-          url: '/v1/author/avatar',
+          url: 'api/auth/profile',
           data: {
-            avatar: res[0]
+            avatar: urls[0]
           },
         }).then((res) => {
-          if (res.errorCode === 0) {
+          if (res.status === 'success') {
             this.$message({
               type: 'success',
               message: '更新头像成功',
