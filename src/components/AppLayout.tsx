@@ -78,6 +78,7 @@ export const AppLayout = () => {
           }}
         >
           <Dropdown
+            trigger={['hover', 'click']}
             menu={{
               items: [
                 { key: 'profile', icon: <UserOutlined />, label: '个人资料' },
