@@ -11,7 +11,7 @@ interface UploadImageProps {
   height?: number
 }
 
-/** 图片上传（七牛云），用于封面/头像，antd Form 受控接入 */
+/** 图片上传（S3 兼容对象存储），用于封面/头像，antd Form 受控接入 */
 export const UploadImage = ({ value, onChange, width = 200, height = 120 }: UploadImageProps) => {
   const [uploading, setUploading] = useState(false)
 

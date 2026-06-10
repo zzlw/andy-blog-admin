@@ -1,6 +1,6 @@
 import http from '@/services/http'
 
-/** 上传文件到七牛云，返回 CDN URL 列表 */
+/** 上传文件到 S3 兼容对象存储，返回 CDN URL 列表 */
 export const uploadFiles = async (files: File[]): Promise<string[]> => {
   const formData = new FormData()
   files.forEach((file) => formData.append('files', file))
