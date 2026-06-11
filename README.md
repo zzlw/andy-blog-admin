@@ -1,6 +1,6 @@
 # andy-blog-admin
 
-博客管理后台（React 重写版），参考 [surmon.me.admin](https://github.com/surmon-china/surmon.me.admin) 架构设计，对接 [andy-blog-koa](../andy-blog-koa)（NestJS）后端。
+博客管理后台（React 重写版），对接 [andy-blog-koa](../andy-blog-koa)（NestJS）后端。
 
 ## 技术栈
 

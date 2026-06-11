@@ -1,5 +1,5 @@
 /**
- * HTTP 服务层（参考 surmon.me.admin 的 nodepress service 设计）
+ * HTTP 服务层
  * - 统一响应 { status: 'success' | 'error', message, result }，成功自动解包
  * - 401 + TOKEN_EXPIRED：用 refresh token 静默换发后重放原请求（仅一次）
  * - 刷新失效：清除令牌并跳转登录页
