@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Upload, message } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { uploadFile } from '@/apis/file'
+import { resolveStatic } from '@/config'
 
 interface UploadImageProps {
   value?: string
@@ -35,7 +36,7 @@ export const UploadImage = ({ value, onChange, width = 200, height = 120 }: Uplo
     >
       {value ? (
         <img
-          src={value}
+          src={resolveStatic(value)}
           alt="uploaded"
           style={{ width, height, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
         />

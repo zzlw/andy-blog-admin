@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import { createFriend, deleteFriend, getFriends, updateFriend } from '@/apis/friend'
 import { UploadImage } from '@/components/UploadImage'
 import type { Friend } from '@/types'
+import { resolveStatic } from '@/config'
 
 export const Friends = () => {
   const [list, setList] = useState<Friend[]>([])
@@ -63,7 +64,7 @@ export const Friends = () => {
             title: '头像',
             dataIndex: 'avatar',
             width: 80,
-            render: (avatar: string) => <Avatar src={avatar || undefined} />,
+            render: (avatar: string) => <Avatar src={resolveStatic(avatar) || undefined} />,
           },
           { title: '名称', dataIndex: 'name', width: 200 },
           {

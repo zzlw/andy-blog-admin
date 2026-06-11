@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import { createCategory, deleteCategory, getCategories, updateCategory } from '@/apis/category'
 import { UploadImage } from '@/components/UploadImage'
 import type { Category } from '@/types'
+import { resolveStatic } from '@/config'
 
 export const Categories = () => {
   const [list, setList] = useState<Category[]>([])
@@ -66,7 +67,7 @@ export const Categories = () => {
             dataIndex: 'cover',
             width: 140,
             render: (cover: string) =>
-              cover ? <img src={cover} alt="" style={{ height: 40, borderRadius: 4 }} /> : '-',
+              cover ? <img src={resolveStatic(cover)} alt="" style={{ height: 40, borderRadius: 4 }} /> : '-',
           },
           {
             title: '操作',

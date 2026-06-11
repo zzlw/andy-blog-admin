@@ -23,6 +23,7 @@ import {
 } from '@/apis/author'
 import { useProfile } from '@/contexts/profile'
 import { AuthorRole, type Author } from '@/types'
+import { resolveStatic } from '@/config'
 
 const ROLE_OPTIONS = [
   { label: '作者', value: AuthorRole.Author },
@@ -119,7 +120,7 @@ export const Authors = () => {
             width: 200,
             render: (_, record) => (
               <Space>
-                <Avatar src={record.avatar || undefined} icon={<UserOutlined />} />
+                <Avatar src={resolveStatic(record.avatar) || undefined} icon={<UserOutlined />} />
                 {record.name}
               </Space>
             ),

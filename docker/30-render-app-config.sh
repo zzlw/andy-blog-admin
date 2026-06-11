@@ -4,8 +4,9 @@ set -e
 
 cat > /usr/share/nginx/html/app-config.js <<EOF
 window.__APP_CONFIG__ = {
-  apiBaseUrl: '${API_BASE_URL}'
+  apiBaseUrl: '${API_BASE_URL}',
+  staticPath: '${STATIC_PATH}'
 }
 EOF
 
-echo "app-config.js rendered: API_BASE_URL=${API_BASE_URL}"
+echo "app-config.js rendered: API_BASE_URL=${API_BASE_URL} STATIC_PATH=${STATIC_PATH}"

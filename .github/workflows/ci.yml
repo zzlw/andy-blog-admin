@@ -1,0 +1,72 @@
+# =============================================================
+# CI/CD：PR 跑 lint+build 门禁；push 部署分支时构建镜像推送阿里云 ACR，
+# 并触发 andy-blog-deploy 仓库的部署工作流（repository_dispatch）
+#
+# 需要配置的 Secrets：
+#   ACR_REGISTRY / ACR_NAMESPACE / ACR_USERNAME / ACR_PASSWORD
+#   DEPLOY_DISPATCH_TOKEN（细粒度 PAT，对 andy-blog-deploy 有 Contents 读写权限）
+# =============================================================
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  # 质量门禁：lint + 类型检查 + 构建
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm build
+
+  # 构建镜像并推送（仅部署分支 push 时）
+  build-push:
+    if: github.event_name == 'push'
+    needs: check
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/andy-blog-admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 生成镜像 tag
+        id: meta
+        run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 触发部署（andy-blog-deploy 仓库）
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DEPLOY_DISPATCH_TOKEN }}
+          repository: ${{ github.repository_owner }}/andy-blog-deploy
+          event-type: deploy
+          client-payload: '{"service": "admin", "tag": "${{ steps.meta.outputs.tag }}"}'

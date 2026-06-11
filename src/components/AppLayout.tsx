@@ -13,6 +13,7 @@ import {
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useProfile } from '@/contexts/profile'
 import { removeTokens } from '@/services/token'
+import { resolveStatic } from '@/config'
 
 const { Sider, Header, Content } = Layout
 
@@ -89,7 +90,7 @@ export const AppLayout = () => {
             }}
           >
             <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Avatar size="small" src={profile?.avatar || undefined} icon={<UserOutlined />} />
+              <Avatar size="small" src={resolveStatic(profile?.avatar) || undefined} icon={<UserOutlined />} />
               {profile?.name ?? '...'}
             </span>
           </Dropdown>

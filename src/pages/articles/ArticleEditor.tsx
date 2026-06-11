@@ -15,7 +15,6 @@ import {
 } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
-import { marked } from 'marked'
 import CodeMirror from '@uiw/react-codemirror'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
@@ -26,6 +25,7 @@ import { getCategories } from '@/apis/category'
 import { getTags } from '@/apis/tag'
 import { getAuthors } from '@/apis/author'
 import { UploadImage } from '@/components/UploadImage'
+import { markdownToHtml } from '@/utils/markdown'
 import {
   ArticlePublic,
   ArticleStar,
@@ -88,7 +88,7 @@ export const ArticleEditor = () => {
   }, [articleId, form])
 
   const previewHtml = useMemo(
-    () => (view === '预览' ? (marked.parse(content) as string) : ''),
+    () => (view === '预览' ? markdownToHtml(content) : ''),
     [view, content],
   )
 
