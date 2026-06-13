@@ -103,3 +103,37 @@ export interface Friend {
   link: string
   avatar: string
 }
+
+/** AI 对话角色（与 andy-blog-ai Worker 的 chat_messages.role 对齐） */
+export type ChatMessageRole = 'user' | 'assistant' | 'system' | 'tool'
+
+/** AI 对话会话（按 session_id 聚合的统计行） */
+export interface ChatSession {
+  session_id: string
+  last_active: number
+  last_user_message: string | null
+  message_count: number
+  input_tokens: number
+  output_tokens: number
+  total_tokens: number
+  author_name: string | null
+  author_email: string | null
+  user_id: number | null
+}
+
+/** AI 对话单条消息 */
+export interface ChatMessage {
+  id: number
+  session_id: string
+  author_name: string | null
+  author_email: string | null
+  user_id: number | null
+  role: ChatMessageRole
+  content: string | null
+  model: string | null
+  tool_calls: string | null
+  tool_call_id: string | null
+  input_tokens: number
+  output_tokens: number
+  created_at: number
+}

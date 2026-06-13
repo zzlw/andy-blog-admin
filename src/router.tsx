@@ -10,6 +10,7 @@ import { Tags } from '@/pages/Tags'
 import { Friends } from '@/pages/Friends'
 import { Messages } from '@/pages/Messages'
 import { Authors } from '@/pages/Authors'
+import { AiAgent } from '@/pages/AiAgent'
 import { Profile } from '@/pages/Profile'
 import { NotFound } from '@/pages/NotFound'
 
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
       { path: 'friends', element: <Friends /> },
       { path: 'messages', element: <Messages /> },
       { path: 'authors', element: <Authors /> },
+      { path: 'ai-agent', element: <AiAgent /> },
       { path: 'profile', element: <Profile /> },
       { path: '*', element: <NotFound /> },
     ],

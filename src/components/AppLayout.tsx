@@ -6,6 +6,7 @@ import {
   LinkOutlined,
   LogoutOutlined,
   MessageOutlined,
+  RobotOutlined,
   TagsOutlined,
   TeamOutlined,
   UserOutlined,
@@ -14,6 +15,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useProfile } from '@/contexts/profile'
 import { removeTokens } from '@/services/token'
 import { resolveStatic } from '@/config'
+import { isAiServiceEnabled } from '@/services/ai-http'
 
 const { Sider, Header, Content } = Layout
 
@@ -24,6 +26,9 @@ const MENU_ITEMS = [
   { key: '/messages', icon: <MessageOutlined />, label: '留言管理' },
   { key: '/friends', icon: <LinkOutlined />, label: '友链管理' },
   { key: '/authors', icon: <TeamOutlined />, label: '作者管理' },
+  ...(isAiServiceEnabled()
+    ? [{ key: '/ai-agent', icon: <RobotOutlined />, label: 'AI 对话' }]
+    : []),
 ]
 
 export const AppLayout = () => {

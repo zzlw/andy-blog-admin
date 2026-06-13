@@ -1,6 +1,7 @@
 interface AppRuntimeConfig {
   apiBaseUrl?: string
   staticPath?: string
+  aiApiBase?: string
 }
 
 declare global {
@@ -16,6 +17,8 @@ export const CONFIG = {
   apiBaseUrl: runtime.apiBaseUrl || 'http://localhost:3000',
   /** 静态资源域名：图片只存相对路径，展示时拼接此前缀 */
   staticPath: runtime.staticPath || '',
+  /** AI 对话服务根地址（andy-blog-ai Worker）；后台调 `${aiApiBase}/admin/*` 管理会话。留空则隐藏 AI 会话菜单 */
+  aiApiBase: (runtime.aiApiBase || '').replace(/\/+$/, ''),
 }
 
 /**

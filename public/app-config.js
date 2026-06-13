@@ -2,5 +2,6 @@
 // 实现「一份构建包部署多环境」。本地开发使用以下默认值。
 window.__APP_CONFIG__ = {
   apiBaseUrl: 'http://localhost:3000',
-  staticPath: 'https://static.jiawen.live'
+  staticPath: 'https://static.jiawen.live',
+  aiApiBase: 'https://ai.jiawen.live'
 }
