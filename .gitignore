@@ -3,6 +3,9 @@ dist/
 *.log
 .DS_Store
 
+# TypeScript 增量编译缓存（本地产物，不应入库）
+*.tsbuildinfo
+
 # 凭证与密钥：任何环境实值禁止入库
 .env
 .env.*
