@@ -1,7 +1,8 @@
 /**
  * 看板专用的零依赖轻量图表（CSS/SVG 实现），避免引入与 React 19 兼容性存疑的重型图表库。
  */
-import { Empty, Tooltip } from 'antd'
+import { Empty, Flex, Segmented, Skeleton, Space, Tooltip } from 'antd'
+import type { VisitorRange, VisitorStats } from '@/apis/analytics'
 
 export interface BarDatum {
   label: string
@@ -76,6 +77,180 @@ export const BarChart = ({
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+const VISITOR_RANGE_OPTIONS: { label: string; value: VisitorRange }[] = [
+  { label: '最近一周', value: '7d' },
+  { label: '最近一月', value: '30d' },
+  { label: '最近三月', value: '90d' },
+  { label: '最近一年', value: '365d' },
+]
+
+const PV_COLOR = '#fa8c16'
+const UV_COLOR = '#1677ff'
+
+const VisitorLegend = ({
+  color,
+  label,
+  value,
+}: {
+  color: string
+  label: string
+  value?: number
+}) => (
+  <span style={{ display: 'inline-flex', alignItems: 'center', fontSize: 13, color: '#595959' }}>
+    <span style={{ width: 10, height: 10, borderRadius: 2, background: color, marginRight: 6 }} />
+    {label}
+    {value != null && (
+      <strong style={{ marginLeft: 6, color: '#262626' }}>{value.toLocaleString('en-US')}</strong>
+    )}
+  </span>
+)
+
+/**
+ * 访客统计：每日 PV（橙）/ UV（蓝）双色柱 + 时间范围切换。
+ * 数据来自 GA4（后端代理），未配置或暂无数据时降级为引导/空态。
+ */
+export const VisitorChart = ({
+  stats,
+  loading,
+  range,
+  onRangeChange,
+  height = 240,
+}: {
+  stats: VisitorStats | null
+  loading: boolean
+  range: VisitorRange
+  onRangeChange: (range: VisitorRange) => void
+  height?: number
+}) => {
+  const series = stats?.series ?? []
+  const hasData = series.some((d) => d.pv > 0 || d.uv > 0)
+  const max = Math.max(1, ...series.map((d) => d.pv))
+  const plotHeight = height - 28
+
+  // 稀疏 x 轴标签：等距取点并确保包含末尾
+  const labelStep = Math.max(1, Math.ceil(series.length / 6))
+  const labelIndices: number[] = []
+  for (let i = 0; i < series.length; i += labelStep) labelIndices.push(i)
+  if (series.length && labelIndices[labelIndices.length - 1] !== series.length - 1) {
+    labelIndices.push(series.length - 1)
+  }
+
+  return (
+    <div>
+      <Flex justify="space-between" align="center" wrap gap="small" style={{ marginBottom: 12 }}>
+        <Space size={16}>
+          <VisitorLegend color={PV_COLOR} label="浏览量 PV" value={stats?.totals.pv} />
+          <VisitorLegend color={UV_COLOR} label="访客数 UV" value={stats?.totals.uv} />
+        </Space>
+        <Segmented
+          size="small"
+          value={range}
+          onChange={(value) => onRangeChange(value as VisitorRange)}
+          options={VISITOR_RANGE_OPTIONS}
+        />
+      </Flex>
+
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 6 }} />
+      ) : !stats?.configured ? (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <span style={{ color: '#8c8c8c' }}>
+              尚未接入 Google Analytics。请在后端配置 <code>GA4_PROPERTY_ID</code> 与{' '}
+              <code>GA4_CREDENTIALS</code> 后查看访客统计。
+            </span>
+          }
+          style={{ padding: '32px 0' }}
+        />
+      ) : !hasData ? (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <span style={{ color: '#8c8c8c' }}>暂无访客数据（GA 数据通常 24~48 小时后可见）</span>
+          }
+          style={{ padding: '32px 0' }}
+        />
+      ) : (
+        <>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: plotHeight }}>
+            {series.map((d) => (
+              <Tooltip
+                key={d.date}
+                title={
+                  <div style={{ fontSize: 12 }}>
+                    <div>{d.date}</div>
+                    <div>浏览量 PV：{d.pv}</div>
+                    <div>访客数 UV：{d.uv}</div>
+                  </div>
+                }
+              >
+                <div
+                  style={{
+                    flex: 1,
+                    height: '100%',
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '72%',
+                      height: `${(d.pv / max) * 100}%`,
+                      minHeight: d.pv > 0 ? 2 : 0,
+                      background: `linear-gradient(180deg, ${PV_COLOR} 0%, ${PV_COLOR}99 100%)`,
+                      borderRadius: '2px 2px 0 0',
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      width: '40%',
+                      height: `${(d.uv / max) * 100}%`,
+                      minHeight: d.uv > 0 ? 2 : 0,
+                      background: `linear-gradient(180deg, ${UV_COLOR} 0%, ${UV_COLOR}cc 100%)`,
+                      borderRadius: '2px 2px 0 0',
+                    }}
+                  />
+                </div>
+              </Tooltip>
+            ))}
+          </div>
+          <div style={{ position: 'relative', height: 16, marginTop: 8 }}>
+            {labelIndices.map((i) => {
+              const pct = series.length > 1 ? (i / (series.length - 1)) * 100 : 0
+              const isFirst = i === 0
+              const isLast = i === series.length - 1
+              return (
+                <span
+                  key={series[i].date}
+                  style={{
+                    position: 'absolute',
+                    left: `${pct}%`,
+                    transform: isFirst
+                      ? 'none'
+                      : isLast
+                        ? 'translateX(-100%)'
+                        : 'translateX(-50%)',
+                    fontSize: 11,
+                    color: '#8c8c8c',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {series[i].date.slice(5)}
+                </span>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }

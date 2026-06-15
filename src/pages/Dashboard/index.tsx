@@ -2,7 +2,7 @@
  * 超级看板：站点核心指标总览。
  * - 时段问候 Hero
  * - 核心指标卡（文章 / 浏览 / 点赞 / 留言）
- * - 近 12 个月发布趋势、分类内容分布图表
+ * - 访客统计（GA4 每日 PV/UV）、分类内容分布图表
  * - 热门文章排行、最新留言、最新 AI 会话
  * - 内容概览与快捷操作
  * 数据由 apis/dashboard.ts 并发聚合，纯前端派生。
@@ -44,9 +44,10 @@ import {
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { getDashboardData, type DashboardData } from '@/apis/dashboard'
+import { getVisitorStats, type VisitorRange, type VisitorStats } from '@/apis/analytics'
 import { useProfile } from '@/contexts/profile'
 import { ArticlePublic, ArticleStar, ArticleStatus, type Article } from '@/types'
-import { BarChart, CHART_PALETTE, DonutChart } from './charts'
+import { CHART_PALETTE, DonutChart, VisitorChart } from './charts'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -85,6 +86,23 @@ export const Dashboard = () => {
     load()
   }, [load])
 
+  // 访客统计（GA4，经后端代理）：独立加载与范围切换，避免阻塞看板其它模块
+  const [visitorStats, setVisitorStats] = useState<VisitorStats | null>(null)
+  const [visitorLoading, setVisitorLoading] = useState(true)
+  const [visitorRange, setVisitorRange] = useState<VisitorRange>('30d')
+
+  useEffect(() => {
+    let active = true
+    setVisitorLoading(true)
+    getVisitorStats(visitorRange)
+      .then((res) => active && setVisitorStats(res))
+      .catch(() => active && setVisitorStats(null))
+      .finally(() => active && setVisitorLoading(false))
+    return () => {
+      active = false
+    }
+  }, [visitorRange])
+
   const stats = useMemo(() => {
     if (!data) return null
     const { articles } = data
@@ -95,18 +113,8 @@ export const Dashboard = () => {
     const privateCount = articles.filter((a) => a.public === ArticlePublic.Private).length
     const totalViews = articles.reduce((sum, a) => sum + (a.views || 0), 0)
     const totalLikes = articles.reduce((sum, a) => sum + (a.like || 0), 0)
-
-    // 近 12 个月发布趋势
-    const months = Array.from({ length: 12 }, (_, i) => dayjs().subtract(11 - i, 'month'))
-    const monthCount = new Map(months.map((m) => [m.format('YYYY-MM'), 0]))
-    articles.forEach((a) => {
-      const key = dayjs(a.created_at).format('YYYY-MM')
-      if (monthCount.has(key)) monthCount.set(key, (monthCount.get(key) ?? 0) + 1)
-    })
-    const trend = months.map((m) => ({
-      label: m.format('M月'),
-      value: monthCount.get(m.format('YYYY-MM')) ?? 0,
-    }))
+    const avgViews = published > 0 ? Math.round(totalViews / published) : 0
+    const likedArticles = articles.filter((a) => (a.like || 0) > 0).length
 
     // 分类内容分布
     const catCount = new Map<number, number>()
@@ -136,7 +144,8 @@ export const Dashboard = () => {
       privateCount,
       totalViews,
       totalLikes,
-      trend,
+      avgViews,
+      likedArticles,
       distribution,
       topArticles,
     }
@@ -200,7 +209,7 @@ export const Dashboard = () => {
       </Card>
 
       {/* 核心指标卡 */}
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} align="stretch">
         <StatCard
           loading={loading}
           title="文章总数"
@@ -215,6 +224,7 @@ export const Dashboard = () => {
           value={stats?.totalViews ?? 0}
           icon={<EyeOutlined />}
           color="#13c2c2"
+          suffix={stats ? `篇均 ${formatNumber(stats.avgViews)} 次` : undefined}
         />
         <StatCard
           loading={loading}
@@ -222,6 +232,7 @@ export const Dashboard = () => {
           value={stats?.totalLikes ?? 0}
           icon={<LikeOutlined />}
           color="#eb2f96"
+          suffix={stats ? `获赞 ${formatNumber(stats.likedArticles)} 篇` : undefined}
         />
         <StatCard
           loading={loading}
@@ -229,18 +240,26 @@ export const Dashboard = () => {
           value={data?.totalMessages ?? 0}
           icon={<MessageOutlined />}
           color="#fa8c16"
+          suffix={
+            data
+              ? data.messages[0]
+                ? `最新 ${dayjs(data.messages[0].created_at).format('MM-DD')}`
+                : '暂无留言'
+              : undefined
+          }
         />
       </Row>
 
       {/* 图表区 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Card title="近 12 个月发布趋势">
-            {loading || !stats ? (
-              <Skeleton active paragraph={{ rows: 5 }} />
-            ) : (
-              <BarChart data={stats.trend} />
-            )}
+          <Card title="访客统计" style={{ height: '100%' }}>
+            <VisitorChart
+              stats={visitorStats}
+              loading={visitorLoading}
+              range={visitorRange}
+              onRangeChange={setVisitorRange}
+            />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
@@ -439,9 +458,9 @@ const StatCard = ({
   suffix?: string
 }) => (
   <Col xs={12} sm={12} md={6}>
-    <Card>
+    <Card style={{ height: '100%' }} styles={{ body: { height: '100%', display: 'flex', alignItems: 'center' } }}>
       {loading ? (
-        <Skeleton active paragraph={false} title={{ width: '60%' }} />
+        <Skeleton active paragraph={false} title={{ width: '60%' }} style={{ width: '100%' }} />
       ) : (
         <Flex align="center" gap="middle">
           <div
