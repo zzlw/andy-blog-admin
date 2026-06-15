@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Avatar, Dropdown, Layout, Menu } from 'antd'
 import {
   AppstoreOutlined,
+  DashboardOutlined,
   FileTextOutlined,
   LinkOutlined,
   LogoutOutlined,
@@ -20,6 +21,7 @@ import { isAiServiceEnabled } from '@/services/ai-http'
 const { Sider, Header, Content } = Layout
 
 const MENU_ITEMS = [
+  { key: '/dashboard', icon: <DashboardOutlined />, label: '超级看板' },
   { key: '/articles', icon: <FileTextOutlined />, label: '文章管理' },
   { key: '/categories', icon: <AppstoreOutlined />, label: '分类管理' },
   { key: '/tags', icon: <TagsOutlined />, label: '标签管理' },

@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router'
 import { RequireAuth } from '@/components/RequireAuth'
 import { AppLayout } from '@/components/AppLayout'
 import { Login } from '@/pages/Login'
+import { Dashboard } from '@/pages/Dashboard'
 import { ArticleList } from '@/pages/articles/ArticleList'
 import { ArticleEditor } from '@/pages/articles/ArticleEditor'
 import { ArticleComments } from '@/pages/articles/ArticleComments'
@@ -24,7 +25,8 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <Navigate to="/articles" replace /> },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { path: 'dashboard', element: <Dashboard /> },
       { path: 'articles', element: <ArticleList /> },
       { path: 'articles/new', element: <ArticleEditor /> },
       { path: 'articles/:id/edit', element: <ArticleEditor /> },
