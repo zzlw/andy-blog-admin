@@ -11,9 +11,11 @@ import {
   Segmented,
   Select,
   Space,
+  Upload,
   message,
 } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, PaperClipOutlined, PictureOutlined } from '@ant-design/icons'
+import type { UploadFile } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import CodeMirror from '@uiw/react-codemirror'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
@@ -25,6 +27,7 @@ import { getCategories } from '@/apis/category'
 import { getTags } from '@/apis/tag'
 import { getAuthors } from '@/apis/author'
 import { UploadImage } from '@/components/UploadImage'
+import { uploadAttachments } from '@/apis/file'
 import { markdownToHtml } from '@/utils/markdown'
 import {
   ArticlePublic,
@@ -91,6 +94,26 @@ export const ArticleEditor = () => {
     () => (view === '预览' ? markdownToHtml(content) : ''),
     [view, content],
   )
+
+  const insertToContent = (snippet: string) =>
+    setContent((prev) => `${prev}${prev && !prev.endsWith('\n') ? '\n' : ''}${snippet}\n`)
+
+  // 上传图片/附件并把 Markdown 追加到正文（图片用 ![]()，其他用 []()）
+  const handleUpload = async (file: File) => {
+    const hide = message.loading(`上传中：${file.name}`, 0)
+    try {
+      const [att] = await uploadAttachments([file])
+      const isImage =
+        /^image\//.test(file.type) || /\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i.test(file.name)
+      insertToContent(isImage ? `![${att.name}](${att.url})` : `[${att.name}](${att.url})`)
+      message.success('已插入到正文')
+    } catch {
+      // 错误提示由 http 拦截器统一处理
+    } finally {
+      hide()
+    }
+    return false
+  }
 
   const submit = async (status?: ArticleStatus) => {
     if (!content.trim()) {
@@ -163,12 +186,32 @@ export const ArticleEditor = () => {
               <Input.TextArea maxLength={255} rows={2} placeholder="文章摘要 / SEO 描述" showCount />
             </Form.Item>
             <Form.Item label="内容" required>
-              <Segmented
-                options={['编辑', '预览']}
-                value={view}
-                onChange={(value) => setView(value as '编辑' | '预览')}
-                style={{ marginBottom: 8 }}
-              />
+              <Space style={{ marginBottom: 8 }} wrap>
+                <Segmented
+                  options={['编辑', '预览']}
+                  value={view}
+                  onChange={(value) => setView(value as '编辑' | '预览')}
+                />
+                <Upload
+                  accept="image/*"
+                  multiple
+                  showUploadList={false}
+                  beforeUpload={handleUpload as (file: UploadFile) => boolean}
+                >
+                  <Button size="small" icon={<PictureOutlined />}>
+                    插入图片
+                  </Button>
+                </Upload>
+                <Upload
+                  multiple
+                  showUploadList={false}
+                  beforeUpload={handleUpload as (file: UploadFile) => boolean}
+                >
+                  <Button size="small" icon={<PaperClipOutlined />}>
+                    插入附件
+                  </Button>
+                </Upload>
+              </Space>
               {view === '编辑' ? (
                 <CodeMirror
                   value={content}

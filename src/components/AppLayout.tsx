@@ -3,6 +3,7 @@ import { Avatar, Dropdown, Layout, Menu } from 'antd'
 import {
   AppstoreOutlined,
   AreaChartOutlined,
+  CustomerServiceOutlined,
   DashboardOutlined,
   FileTextOutlined,
   LinkOutlined,
@@ -29,6 +30,7 @@ const buildMenuItems = (isSuperAdmin: boolean) => [
   { key: '/articles', icon: <FileTextOutlined />, label: '文章管理' },
   { key: '/categories', icon: <AppstoreOutlined />, label: '分类管理' },
   { key: '/tags', icon: <TagsOutlined />, label: '标签管理' },
+  { key: '/music', icon: <CustomerServiceOutlined />, label: '音乐管理' },
   { key: '/messages', icon: <MessageOutlined />, label: '留言管理' },
   { key: '/friends', icon: <LinkOutlined />, label: '友链管理' },
   { key: '/authors', icon: <TeamOutlined />, label: '作者管理' },

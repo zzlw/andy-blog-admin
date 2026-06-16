@@ -10,6 +10,7 @@ import { ArticleComments } from '@/pages/articles/ArticleComments'
 import { Categories } from '@/pages/Categories'
 import { Tags } from '@/pages/Tags'
 import { Friends } from '@/pages/Friends'
+import { Music } from '@/pages/Music'
 import { Messages } from '@/pages/Messages'
 import { Authors } from '@/pages/Authors'
 import { AiAgent } from '@/pages/AiAgent'
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       { path: 'articles/:id/comments', element: <ArticleComments /> },
       { path: 'categories', element: <Categories /> },
       { path: 'tags', element: <Tags /> },
+      { path: 'music', element: <Music /> },
       { path: 'friends', element: <Friends /> },
       { path: 'messages', element: <Messages /> },
       { path: 'authors', element: <Authors /> },

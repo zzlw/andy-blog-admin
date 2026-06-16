@@ -104,6 +104,18 @@ export interface Friend {
   avatar: string
 }
 
+/** 歌曲（音乐播放器歌单项；url/cover 为相对路径，展示时拼接 staticPath） */
+export interface Song {
+  id: number
+  name: string
+  artist: string
+  url: string
+  cover: string
+  sort: number
+  created_at: string
+  updated_at: string
+}
+
 /** AI 对话角色（与 andy-blog-ai Worker 的 chat_messages.role 对齐） */
 export type ChatMessageRole = 'user' | 'assistant' | 'system' | 'tool'
 
