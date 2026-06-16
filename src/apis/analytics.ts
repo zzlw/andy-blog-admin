@@ -9,7 +9,7 @@ export interface VisitorPoint {
 }
 
 export interface VisitorStats {
-  /** 后端是否已正确配置 GA4；false 时前端展示配置引导 */
+  /** 后端是否已正确配置 Umami；false 时前端展示配置引导 */
   configured: boolean
   range: VisitorRange
   series: VisitorPoint[]
