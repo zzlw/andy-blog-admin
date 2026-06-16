@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Avatar, Dropdown, Layout, Menu } from 'antd'
 import {
   AppstoreOutlined,
+  AreaChartOutlined,
   DashboardOutlined,
   FileTextOutlined,
   LinkOutlined,
@@ -20,8 +21,11 @@ import { isAiServiceEnabled } from '@/services/ai-http'
 
 const { Sider, Header, Content } = Layout
 
-const MENU_ITEMS = [
+const buildMenuItems = (isSuperAdmin: boolean) => [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '超级看板' },
+  ...(isSuperAdmin
+    ? [{ key: '/analytics', icon: <AreaChartOutlined />, label: '访客分析' }]
+    : []),
   { key: '/articles', icon: <FileTextOutlined />, label: '文章管理' },
   { key: '/categories', icon: <AppstoreOutlined />, label: '分类管理' },
   { key: '/tags', icon: <TagsOutlined />, label: '标签管理' },
@@ -36,13 +40,15 @@ const MENU_ITEMS = [
 export const AppLayout = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { profile } = useProfile()
+  const { profile, isSuperAdmin } = useProfile()
+
+  const menuItems = useMemo(() => buildMenuItems(isSuperAdmin), [isSuperAdmin])
 
   // 高亮当前一级菜单（/articles/1/edit → /articles）
   const selectedKey = useMemo(() => {
     const top = `/${location.pathname.split('/')[1]}`
-    return MENU_ITEMS.some((item) => item.key === top) ? top : '/articles'
-  }, [location.pathname])
+    return menuItems.some((item) => item.key === top) ? top : '/articles'
+  }, [location.pathname, menuItems])
 
   const logout = () => {
     removeTokens()
@@ -69,7 +75,7 @@ export const AppLayout = () => {
         <Menu
           theme="dark"
           mode="inline"
-          items={MENU_ITEMS}
+          items={menuItems}
           selectedKeys={[selectedKey]}
           onClick={({ key }) => navigate(key)}
         />

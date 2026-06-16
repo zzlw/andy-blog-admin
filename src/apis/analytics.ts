@@ -20,3 +20,34 @@ export const getVisitorStats = (range: VisitorRange) =>
   http
     .get<VisitorStats>('/api/analytics/visitors', { range })
     .then((res) => res.result)
+
+/** 维度聚合项（地区 / 国家 / 页面） */
+export interface DimensionStat {
+  key: string
+  pv: number
+  uv: number
+}
+
+/** 最近访客明细（后端不返回原始 IP，仅归属地） */
+export interface RecentVisitor {
+  time: string
+  location: string
+  country: string
+  country_code: string
+  isp: string
+  path: string
+}
+
+export interface VisitorInsights {
+  range: VisitorRange
+  totals: { pv: number; uv: number }
+  topLocations: DimensionStat[]
+  topCountries: DimensionStat[]
+  topPages: DimensionStat[]
+  recent: RecentVisitor[]
+}
+
+export const getVisitorInsights = (range: VisitorRange) =>
+  http
+    .get<VisitorInsights>('/api/analytics/insights', { range })
+    .then((res) => res.result)
