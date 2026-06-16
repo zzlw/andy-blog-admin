@@ -15,7 +15,6 @@ import {
   message,
 } from 'antd'
 import { DeleteOutlined, PlusOutlined, SoundOutlined, UploadOutlined } from '@ant-design/icons'
-import type { UploadFile } from 'antd'
 import { resolveStatic } from '@/config'
 import { useProfile } from '@/contexts/profile'
 import { UploadImage } from '@/components/UploadImage'
@@ -300,7 +299,10 @@ export const Music = () => {
           accept="audio/*,.mp3,.flac,.m4a,.wav,.ogg"
           multiple
           showUploadList={false}
-          beforeUpload={handleSelect as (file: UploadFile) => boolean}
+          beforeUpload={(file) => {
+            void handleSelect(file)
+            return false
+          }}
           style={{ marginBottom: 16 }}
         >
           <p className="ant-upload-drawer-icon" style={{ marginBottom: 8 }}>

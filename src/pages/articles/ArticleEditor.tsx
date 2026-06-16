@@ -15,7 +15,6 @@ import {
   message,
 } from 'antd'
 import { ArrowLeftOutlined, PaperClipOutlined, PictureOutlined } from '@ant-design/icons'
-import type { UploadFile } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import CodeMirror from '@uiw/react-codemirror'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
@@ -196,7 +195,10 @@ export const ArticleEditor = () => {
                   accept="image/*"
                   multiple
                   showUploadList={false}
-                  beforeUpload={handleUpload as (file: UploadFile) => boolean}
+                  beforeUpload={(file) => {
+                    void handleUpload(file)
+                    return false
+                  }}
                 >
                   <Button size="small" icon={<PictureOutlined />}>
                     插入图片
@@ -205,7 +207,10 @@ export const ArticleEditor = () => {
                 <Upload
                   multiple
                   showUploadList={false}
-                  beforeUpload={handleUpload as (file: UploadFile) => boolean}
+                  beforeUpload={(file) => {
+                    void handleUpload(file)
+                    return false
+                  }}
                 >
                   <Button size="small" icon={<PaperClipOutlined />}>
                     插入附件
