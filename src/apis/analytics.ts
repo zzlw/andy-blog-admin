@@ -28,13 +28,17 @@ export interface DimensionStat {
   uv: number
 }
 
-/** 最近访客明细（后端不返回原始 IP，仅归属地） */
+/** 最近访客明细（后台管理可见，含 IP/设备） */
 export interface RecentVisitor {
   time: string
+  ip: string
   location: string
   country: string
   country_code: string
   isp: string
+  browser: string
+  os: string
+  device: string
   path: string
 }
 

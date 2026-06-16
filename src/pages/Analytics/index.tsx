@@ -17,6 +17,7 @@ import {
   Space,
   Statistic,
   Table,
+  Tag,
   Tooltip,
   Typography,
 } from 'antd'
@@ -230,35 +231,74 @@ export const Analytics = () => {
           loading={loading}
           dataSource={insights?.recent ?? []}
           pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
-          scroll={{ x: 720 }}
+          scroll={{ x: 1080 }}
           columns={[
             {
               title: '时间',
               dataIndex: 'time',
-              width: 170,
-              render: (value: string) => dayjs(value).format('YYYY-MM-DD HH:mm:ss'),
+              width: 160,
+              fixed: 'left',
+              render: (value: string) => dayjs(value).format('MM-DD HH:mm:ss'),
+            },
+            {
+              title: 'IP',
+              dataIndex: 'ip',
+              width: 140,
+              render: (value: string) =>
+                value ? (
+                  <Text copyable style={{ fontSize: 12 }}>
+                    {value}
+                  </Text>
+                ) : (
+                  <Text type="secondary">—</Text>
+                ),
             },
             {
               title: '归属地',
               dataIndex: 'location',
+              width: 240,
+              ellipsis: true,
               render: (value: string, record) => (
                 <Space size={4}>
                   <span>{flagOf(record.country_code)}</span>
-                  <Text>{value || '未知'}</Text>
+                  <Text ellipsis={{ tooltip: value }}>{value || '未知'}</Text>
                 </Space>
               ),
             },
             {
               title: '运营商',
               dataIndex: 'isp',
-              width: 180,
+              width: 150,
               ellipsis: true,
               render: (value: string) => value || <Text type="secondary">—</Text>,
             },
             {
+              title: '设备',
+              dataIndex: 'browser',
+              width: 200,
+              render: (_: string, record) => {
+                const color =
+                  record.device === 'Mobile'
+                    ? 'green'
+                    : record.device === 'Tablet'
+                      ? 'gold'
+                      : record.device === 'Bot'
+                        ? 'red'
+                        : 'blue'
+                return (
+                  <Space size={4} wrap>
+                    {record.device && <Tag color={color}>{record.device}</Tag>}
+                    <Text style={{ fontSize: 12 }}>
+                      {[record.browser, record.os].filter(Boolean).join(' / ') || '未知'}
+                    </Text>
+                  </Space>
+                )
+              },
+            },
+            {
               title: '页面',
               dataIndex: 'path',
-              width: 220,
+              width: 200,
               ellipsis: true,
               render: (value: string) =>
                 value ? (
