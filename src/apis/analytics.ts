@@ -9,7 +9,7 @@ export interface VisitorPoint {
 }
 
 export interface VisitorStats {
-  /** 后端是否已正确配置 Umami；false 时前端展示配置引导 */
+  /** 自建统计恒为 true；保留字段以兼容图表组件 */
   configured: boolean
   range: VisitorRange
   series: VisitorPoint[]

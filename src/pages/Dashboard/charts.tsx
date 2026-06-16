@@ -111,7 +111,7 @@ const VisitorLegend = ({
 
 /**
  * 访客统计：每日 PV（橙）/ UV（蓝）双色柱 + 时间范围切换。
- * 数据来自自托管 Umami（后端代理），未配置或暂无数据时降级为引导/空态。
+ * 数据来自自建统计（后端基于 MongoDB 聚合），暂无数据时降级为空态。
  */
 export const VisitorChart = ({
   stats,
@@ -159,12 +159,7 @@ export const VisitorChart = ({
       ) : !stats?.configured ? (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            <span style={{ color: '#8c8c8c' }}>
-              尚未接入 Umami。请在后端配置 <code>UMAMI_API_URL</code>、<code>UMAMI_WEBSITE_ID</code>{' '}
-              及读数账号后查看访客统计。
-            </span>
-          }
+          description={<span style={{ color: '#8c8c8c' }}>访客统计尚未就绪</span>}
           style={{ padding: '32px 0' }}
         />
       ) : !hasData ? (

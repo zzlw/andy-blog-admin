@@ -2,7 +2,7 @@
  * 超级看板：站点核心指标总览。
  * - 时段问候 Hero
  * - 核心指标卡（文章 / 浏览 / 点赞 / 留言）
- * - 访客统计（Umami 每日 PV/UV）、分类内容分布图表
+ * - 访客统计（自建每日 PV/UV）、分类内容分布图表
  * - 热门文章排行、最新留言、最新 AI 会话
  * - 内容概览与快捷操作
  * 数据由 apis/dashboard.ts 并发聚合，纯前端派生。
@@ -86,7 +86,7 @@ export const Dashboard = () => {
     load()
   }, [load])
 
-  // 访客统计（Umami，经后端代理）：独立加载与范围切换，避免阻塞看板其它模块
+  // 访客统计（自建，后端 Mongo 聚合）：独立加载与范围切换，避免阻塞看板其它模块
   const [visitorStats, setVisitorStats] = useState<VisitorStats | null>(null)
   const [visitorLoading, setVisitorLoading] = useState(true)
   const [visitorRange, setVisitorRange] = useState<VisitorRange>('30d')
